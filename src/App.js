@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import Blog from './components/Blog'
 import LoginForm from './components/LoginForm'
+import UserInfo from './components/UserInfo'
 import blogService from './services/blogs'
 import loginService from './services/login'
 
@@ -16,6 +17,14 @@ const App = () => {
     )  
   }, [])
 
+  useEffect(() => {
+    const loggedUserJSON = window.localStorage.getItem('loggedInUser')
+    if (loggedUserJSON) {
+      const user = JSON.parse(loggedUserJSON)
+      setUser(user)      
+    }
+  }, [])
+
   const handleLogin = async (event) => {
     event.preventDefault()
 
@@ -23,6 +32,10 @@ const App = () => {
       const user = await loginService.login({
         username, password
       })
+
+      window.localStorage.setItem(
+        'loggedInUser', JSON.stringify(user)
+      )
       setUser(user)
       // reset login form
       setUsername('')
@@ -30,6 +43,11 @@ const App = () => {
     } catch (exception) {
       alert('Wrong credentials')
     }
+  }
+
+  const handleLogout = () => {
+    window.localStorage.clear()
+    setUser(null)
   }
 
   if (user === null) {
@@ -45,9 +63,10 @@ const App = () => {
   return (
     <div>
       <h2>blogs</h2>
-      <p>
-        {user.name} logged in
-      </p>
+      <UserInfo 
+        nameLogged={user.name}
+        handleLogout={handleLogout}
+      />
       {blogs.map(blog =>
         <Blog key={blog.id} blog={blog} />
       )}
