@@ -3,6 +3,7 @@ import Blog from './components/Blog'
 import LoginForm from './components/LoginForm'
 import UserInfo from './components/UserInfo'
 import CreateNew from './components/CreateNew'
+import Notification from './components/Notification'
 import blogService from './services/blogs'
 import loginService from './services/login'
 
@@ -15,6 +16,9 @@ const App = () => {
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
   const [url, setUrl] = useState('')
+
+  const [notificationMsg, setNotificationMsg] = useState(null)
+  const [messageStyle, setMessageStyle] = useState(null)
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
@@ -30,6 +34,29 @@ const App = () => {
     }
   }, [])
 
+  // styles for notifications
+  const successfulStyle = {
+    color: "green",
+    background: "lightgray",
+    fontSize: 20,
+    borderStyle: "solid",
+    borderRadius: 5,
+    padding: 10,
+    marginBottom: 10,
+  }
+
+  const errorStyle = {...successfulStyle, color: "red"}
+
+  const showNotification = (message, style) => {
+    setNotificationMsg(message)
+    setMessageStyle(style)
+
+    setTimeout(() => {
+      setNotificationMsg('')
+      setMessageStyle(null)
+    }, 3000)
+  }
+
   const handleLogin = async (event) => {
     event.preventDefault()
 
@@ -42,15 +69,13 @@ const App = () => {
         'loggedInUser', JSON.stringify(user)
       )
       
-      // console.log('user.token', user.token)
-
       blogService.setToken(user.token)
       setUser(user)
       // reset login form
       setUsername('')
       setPassword('')
     } catch (exception) {
-      alert('Wrong credentials')
+      showNotification('wrong username or password', errorStyle)
     }
   }
 
@@ -71,24 +96,33 @@ const App = () => {
       setTitle('')
       setAuthor('')
       setUrl('')
+
+      showNotification(`a new blog ${newBlog.title} by ${newBlog.author} added`, successfulStyle)
+
     } catch (exception) {
-      alert('error while creating new blog post')
+      showNotification('error while creating new blog post', errorStyle)
     }
   }
 
   if (user === null) {
-    return (      
-      <LoginForm handleLogin={handleLogin} 
-        username={username} password={password}
-        onUsernameChange={({target}) => setUsername(target.value)}
-        onPasswordChange={({target}) => setPassword(target.value)}
-      />
+    return (
+      <div>
+        <h2>log in to application</h2>
+        <Notification message={notificationMsg} type={messageStyle} />
+        <LoginForm handleLogin={handleLogin} 
+          username={username} password={password}
+          onUsernameChange={({target}) => setUsername(target.value)}
+          onPasswordChange={({target}) => setPassword(target.value)}
+        />
+      </div>      
+
     )
   }
 
   return (
     <div>
       <h2>blogs</h2>
+      <Notification message={notificationMsg} type={messageStyle} />
       <UserInfo 
         nameLogged={user.name}
         handleLogout={handleLogout}
