@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Blog from './components/Blog'
 import LoginForm from './components/LoginForm'
 import UserInfo from './components/UserInfo'
 import CreateNew from './components/CreateNew'
+import Togglable from './components/Togglable'
 import Notification from './components/Notification'
 import blogService from './services/blogs'
 import loginService from './services/login'
@@ -12,10 +13,6 @@ const App = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
-
-  const [title, setTitle] = useState('')
-  const [author, setAuthor] = useState('')
-  const [url, setUrl] = useState('')
 
   const [notificationMsg, setNotificationMsg] = useState(null)
   const [messageStyle, setMessageStyle] = useState(null)
@@ -84,18 +81,14 @@ const App = () => {
     setUser(null)
   }
 
-  const handleCreate = async (event) => {
-    event.preventDefault()
+  const createNewFromRef = useRef()
 
-    try {
-      const newBlog = await blogService.create({
-        title, author, url
-      })
+  const addNew = async (newBlogObject) => {
+    createNewFromRef.current.toggleVisibility()
+    try {    
+      const newBlog = await blogService.create(newBlogObject)
 
       setBlogs(blogs.concat(newBlog))
-      setTitle('')
-      setAuthor('')
-      setUrl('')
 
       showNotification(`a new blog ${newBlog.title} by ${newBlog.author} added`, successfulStyle)
 
@@ -114,8 +107,7 @@ const App = () => {
           onUsernameChange={({target}) => setUsername(target.value)}
           onPasswordChange={({target}) => setPassword(target.value)}
         />
-      </div>      
-
+      </div>
     )
   }
 
@@ -127,14 +119,10 @@ const App = () => {
         nameLogged={user.name}
         handleLogout={handleLogout}
       />
-      <h2>create new</h2>
-      <CreateNew
-        handleCreate={handleCreate}
-        title={title} author={author} url={url}
-        onTitleChange={({target}) => setTitle(target.value)}
-        onAuthorChange={({target}) => setAuthor(target.value)}
-        onUrlChange={({target}) => setUrl(target.value)}
-      />
+      <Togglable buttonLabel='new post' ref={createNewFromRef}>
+        <h2>create new</h2>
+        <CreateNew createNew={addNew} />
+      </Togglable>
       {blogs.map(blog =>
         <Blog key={blog.id} blog={blog} />
       )}
