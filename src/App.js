@@ -19,8 +19,8 @@ const App = () => {
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
-      setBlogs( blogs )
-    )  
+      setBlogs( blogs )      
+    )
   }, [])
 
   useEffect(() => {
@@ -119,7 +119,10 @@ const App = () => {
         nameLogged={user.name}
         handleLogout={handleLogout}
       />
-      <Togglable buttonLabel='new post' ref={createNewFromRef}>
+      <Togglable 
+        buttonLabelToShow='new post'
+        buttonLabelToHide='cancel'
+        ref={createNewFromRef}>
         <h2>create new</h2>
         <CreateNew createNew={addNew} />
       </Togglable>
