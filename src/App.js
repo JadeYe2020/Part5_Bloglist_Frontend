@@ -17,10 +17,23 @@ const App = () => {
   const [notificationMsg, setNotificationMsg] = useState(null)
   const [messageStyle, setMessageStyle] = useState(null)
 
+  const sortBlogs = (a, b) => {
+      if (!a.likes && b.likes) {
+        return 1
+      } else if (a.likes && !b.likes) {
+        return -1
+      } else if (a.likes && b.likes ) {
+        return (b.likes - a.likes)
+      } else { return 0 }
+  }
+
   useEffect(() => {
-    blogService.getAll().then(blogs =>
-      setBlogs( blogs )      
-    )
+    const getAll = async () => {
+      const blogs = await blogService.getAll()
+      const blogsSorted = blogs.sort(sortBlogs)
+      setBlogs( blogsSorted ) 
+    }
+    getAll()
   }, [])
 
   useEffect(() => {
@@ -88,7 +101,7 @@ const App = () => {
     try {    
       const newBlog = await blogService.create(newBlogObject)
 
-      setBlogs(blogs.concat(newBlog))
+      setBlogs(blogs.concat(newBlog).sort(sortBlogs))
 
       showNotification(`a new blog ${newBlog.title} by ${newBlog.author} added`, successfulStyle)
 
@@ -105,7 +118,7 @@ const App = () => {
 
       const updatedBlog = await blogService.update(id, updatedObject)
       
-      setBlogs(blogs.map(blog => blog.id !== id ? blog : updatedBlog))
+      setBlogs(blogs.map(blog => blog.id !== id ? blog : updatedBlog).sort(sortBlogs))
     } catch (exception) {
       showNotification('error while liking a post', errorStyle)
     }
