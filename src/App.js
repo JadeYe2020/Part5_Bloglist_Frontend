@@ -124,6 +124,22 @@ const App = () => {
     }
   }
 
+  const deletePost = async (id, e) => {
+    const blogToRemove = blogs.find(blog => blog.id === id)
+    const confirmDelete = window.confirm(`Remove blog ${blogToRemove.title} by ${blogToRemove.author}`)
+
+    if (confirmDelete) {
+      try {
+        const deleteResponse = await blogService.deletePost(id)
+        if (deleteResponse.status === 204) {
+          setBlogs(blogs.filter(blog => blog.id !== id))
+        }
+      } catch (exception) {
+        showNotification('error while removing a post', errorStyle)
+      }
+    }
+  }
+
   if (user === null) {
     return (
       <div>
@@ -154,7 +170,11 @@ const App = () => {
         <CreateNew createNew={addNew} />
       </Togglable>
       {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} addLike={(e) => addLike(blog.id, e)} />
+        <Blog key={blog.id} blog={blog}
+          addLike={(e) => addLike(blog.id, e)}
+          username={user.username}
+          deletePost={(e) => deletePost(blog.id, e)}
+        />
       )}
     </div>
   )
