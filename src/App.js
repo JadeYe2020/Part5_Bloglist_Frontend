@@ -18,20 +18,20 @@ const App = () => {
   const [messageStyle, setMessageStyle] = useState(null)
 
   const sortBlogs = (a, b) => {
-      if (!a.likes && b.likes) {
-        return 1
-      } else if (a.likes && !b.likes) {
-        return -1
-      } else if (a.likes && b.likes ) {
-        return (b.likes - a.likes)
-      } else { return 0 }
+    if (!a.likes && b.likes) {
+      return 1
+    } else if (a.likes && !b.likes) {
+      return -1
+    } else if (a.likes && b.likes ) {
+      return (b.likes - a.likes)
+    } else { return 0 }
   }
 
   useEffect(() => {
     const getAll = async () => {
       const blogs = await blogService.getAll()
       const blogsSorted = blogs.sort(sortBlogs)
-      setBlogs( blogsSorted ) 
+      setBlogs( blogsSorted )
     }
     getAll()
   }, [])
@@ -40,22 +40,22 @@ const App = () => {
     const loggedUserJSON = window.localStorage.getItem('loggedInUser')
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
-      setUser(user)      
+      setUser(user)
     }
   }, [])
 
   // styles for notifications
   const successfulStyle = {
-    color: "green",
-    background: "lightgray",
+    color: 'green',
+    background: 'lightgray',
     fontSize: 20,
-    borderStyle: "solid",
+    borderStyle: 'solid',
     borderRadius: 5,
     padding: 10,
     marginBottom: 10,
   }
 
-  const errorStyle = {...successfulStyle, color: "red"}
+  const errorStyle = { ...successfulStyle, color: 'red' }
 
   const showNotification = (message, style) => {
     setNotificationMsg(message)
@@ -78,7 +78,7 @@ const App = () => {
       window.localStorage.setItem(
         'loggedInUser', JSON.stringify(user)
       )
-      
+
       blogService.setToken(user.token)
       setUser(user)
       // reset login form
@@ -98,7 +98,7 @@ const App = () => {
 
   const addNew = async (newBlogObject) => {
     createNewFromRef.current.toggleVisibility()
-    try {    
+    try {
       const newBlog = await blogService.create(newBlogObject)
 
       setBlogs(blogs.concat(newBlog).sort(sortBlogs))
@@ -110,21 +110,21 @@ const App = () => {
     }
   }
 
-  const addLike = async (id, e) => {
+  const addLike = async (id) => {
     try {
       const blogToUpdate = blogs.find(blog => blog.id === id)
       // to make sure the property likes exist
       const updatedObject = { ...blogToUpdate, likes: blogToUpdate.likes ? (blogToUpdate.likes + 1) : 1 }
 
       const updatedBlog = await blogService.update(id, updatedObject)
-      
+
       setBlogs(blogs.map(blog => blog.id !== id ? blog : updatedBlog).sort(sortBlogs))
     } catch (exception) {
       showNotification('error while liking a post', errorStyle)
     }
   }
 
-  const deletePost = async (id, e) => {
+  const deletePost = async (id) => {
     const blogToRemove = blogs.find(blog => blog.id === id)
     const confirmDelete = window.confirm(`Remove blog ${blogToRemove.title} by ${blogToRemove.author}`)
 
@@ -145,10 +145,10 @@ const App = () => {
       <div>
         <h2>log in to application</h2>
         <Notification message={notificationMsg} type={messageStyle} />
-        <LoginForm handleLogin={handleLogin} 
+        <LoginForm handleLogin={handleLogin}
           username={username} password={password}
-          onUsernameChange={({target}) => setUsername(target.value)}
-          onPasswordChange={({target}) => setPassword(target.value)}
+          onUsernameChange={({ target }) => setUsername(target.value)}
+          onPasswordChange={({ target }) => setPassword(target.value)}
         />
       </div>
     )
@@ -158,11 +158,11 @@ const App = () => {
     <div>
       <h2>blogs</h2>
       <Notification message={notificationMsg} type={messageStyle} />
-      <UserInfo 
+      <UserInfo
         nameLogged={user.name}
         handleLogout={handleLogout}
       />
-      <Togglable 
+      <Togglable
         buttonLabelToShow='new post'
         buttonLabelToHide='cancel'
         ref={createNewFromRef}>
@@ -171,9 +171,9 @@ const App = () => {
       </Togglable>
       {blogs.map(blog =>
         <Blog key={blog.id} blog={blog}
-          addLike={(e) => addLike(blog.id, e)}
+          addLike={() => addLike(blog.id)}
           username={user.username}
-          deletePost={(e) => deletePost(blog.id, e)}
+          deletePost={() => deletePost(blog.id)}
         />
       )}
     </div>

@@ -1,20 +1,20 @@
-import { useState } from "react"
+import { useState } from 'react'
 
-const CreateNew = ({createNew}) => {
+const CreateNew = ({ createNew }) => {
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
   const [url, setUrl] = useState('')
 
   const onTitleChange = (event) => {
-    setTitle(event.target.value)    
+    setTitle(event.target.value)
   }
 
   const onAuthorChange = (event) => {
-    setAuthor(event.target.value)    
+    setAuthor(event.target.value)
   }
 
   const onUrlChange = (event) => {
-    setUrl(event.target.value)    
+    setUrl(event.target.value)
   }
 
   const handleCreate = (event) => {

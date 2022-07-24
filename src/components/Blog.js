@@ -1,8 +1,8 @@
-import { useState } from "react"
+import { useState } from 'react'
 
 const Blog = ({ blog, addLike, deletePost, username }) => {
   const [ detailsDisplayed, setDetailsDisplayed ] = useState(false)
-  
+
   let buttonLabel = detailsDisplayed ? 'hide' : 'view'
 
   const blogStyle = {
@@ -15,7 +15,7 @@ const Blog = ({ blog, addLike, deletePost, username }) => {
 
   const toggleVisibility = () => setDetailsDisplayed(!detailsDisplayed)
 
-  return ( 
+  return (
     <div style={blogStyle}>
       {blog.title} {blog.author}
       <button onClick={toggleVisibility}>{buttonLabel}</button>
@@ -26,7 +26,7 @@ const Blog = ({ blog, addLike, deletePost, username }) => {
             likes {blog.likes}
             <button onClick={addLike}>like</button>
           </div>
-          {blog.user ? 
+          {blog.user ?
             <div>
               <div>{blog.user.name}</div>
               {
@@ -35,11 +35,11 @@ const Blog = ({ blog, addLike, deletePost, username }) => {
                   : <div></div>
               }
             </div>
-             : <div></div>}       
+            : <div></div>}
         </div>
-         : <div></div>
+        : <div></div>
       }
-    </div>  
+    </div>
   )
 }
 
