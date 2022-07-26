@@ -21,8 +21,8 @@ const Blog = ({ blog, addLike, deletePost, username }) => {
       <button onClick={toggleVisibility}>{buttonLabel}</button>
       { detailsDisplayed ?
         <div>
-          <div>{blog.url}</div>
-          <div>
+          <div id='url'>{blog.url}</div>
+          <div id='likes'>
             likes {blog.likes}
             <button onClick={addLike}>like</button>
           </div>
