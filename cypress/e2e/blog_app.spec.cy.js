@@ -29,6 +29,51 @@ describe('Blog app', function() {
       cy.get('#login-button').click()
 
       cy.contains('wrong username or password')
+      cy.get('.notification').should('have.css', 'color', 'rgb(255, 0, 0)')
+    })
+  })
+
+  describe('When logged in', function() {
+    beforeEach(function() {
+      cy.login({ username: 'root', password: 'sekret' })
+    })
+
+    it('A blog can be created', function() {
+      cy.createNew({
+        title: 'a new blog title',
+        author: 'some author',
+        url: 'http://someurl.com'
+      })
+
+      cy.get('.blogItem').contains('a new blog title some author')
+    })
+
+    describe('and several blogs exist', function () {
+      beforeEach(function () {
+        cy.createNew({
+          title: '1st blog title',
+          author: '1st author',
+          url: 'http://someurl.com'
+        })
+        cy.createNew({
+          title: '2nd blog title',
+          author: '2nd author',
+          url: 'http://someurl.com'
+        })
+        cy.createNew({
+          title: '3rd blog title',
+          author: '3rd author',
+          url: 'http://someurl.com'
+        })
+      })
+
+      it.only('users can like a blog', function () {
+        cy.get('.blogItem').contains('2nd blog title').contains('view').click()
+          .get('#like').click()
+
+        cy.get('.blogItem').contains('2nd blog title').get('#likes').contains('1')
+      })
+
     })
   })
 })

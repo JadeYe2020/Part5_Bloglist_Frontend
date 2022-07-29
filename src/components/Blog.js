@@ -16,7 +16,7 @@ const Blog = ({ blog, addLike, deletePost, username }) => {
   const toggleVisibility = () => setDetailsDisplayed(!detailsDisplayed)
 
   return (
-    <div style={blogStyle}>
+    <div className='blogItem' style={blogStyle}>
       {blog.title} {blog.author}
       <button onClick={toggleVisibility}>{buttonLabel}</button>
       { detailsDisplayed ?
