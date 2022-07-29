@@ -74,6 +74,13 @@ describe('Blog app', function() {
         cy.get('.blogItem').contains('2nd blog title').get('#likes').contains('1')
       })
 
+      it.only('the user who created a blog can delete it', function () {
+        cy.get('.blogItem').contains('3rd blog title').contains('view').click()
+          .get('#delete-button').click()
+
+        cy.get('.blogItem').should('not.contain', '3rd blog title')
+      })
+
     })
   })
 })
