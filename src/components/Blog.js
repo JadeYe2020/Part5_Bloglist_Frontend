@@ -18,7 +18,7 @@ const Blog = ({ blog, addLike, deletePost, username }) => {
   return (
     <div className='blogItem' style={blogStyle}>
       {blog.title} {blog.author}
-      <button onClick={toggleVisibility}>{buttonLabel}</button>
+      <button className='toggle-button' onClick={toggleVisibility}>{buttonLabel}</button>
       { detailsDisplayed ?
         <div>
           <div id='url'>{blog.url}</div>

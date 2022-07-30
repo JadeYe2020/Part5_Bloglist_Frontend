@@ -39,11 +39,11 @@ describe('Blog app', function() {
     })
 
     it('A blog can be created', function() {
-      cy.createNew({
-        title: 'a new blog title',
-        author: 'some author',
-        url: 'http://someurl.com'
-      })
+      cy.contains('new post').click()
+      cy.get('#title-input').type('a new blog title')
+      cy.get('#author-input').type('some author')
+      cy.get('#url-input').type('http://someurl.com')
+      cy.get('#submit-button').click()
 
       cy.get('.blogItem').contains('a new blog title some author')
     })
@@ -67,20 +67,61 @@ describe('Blog app', function() {
         })
       })
 
-      it.only('users can like a blog', function () {
+      it('users can like a blog', function () {
         cy.get('.blogItem').contains('2nd blog title').contains('view').click()
           .get('#like').click()
 
         cy.get('.blogItem').contains('2nd blog title').get('#likes').contains('1')
       })
 
-      it.only('the user who created a blog can delete it', function () {
+      it('the user who created a blog can delete it', function () {
         cy.get('.blogItem').contains('3rd blog title').contains('view').click()
           .get('#delete-button').click()
 
         cy.get('.blogItem').should('not.contain', '3rd blog title')
       })
+    })
 
+    describe('the blog with the most likes being first', function () {
+      beforeEach(function () {
+        cy.createNew({
+          title: 'The title with the least likes',
+          author: '1st author',
+          url: 'http://someurl.com'
+        })
+        cy.createNew({
+          title: 'The title with the most likes',
+          author: '2nd author',
+          url: 'http://someurl.com'
+        })
+        cy.createNew({
+          title: 'The title with the second most likes',
+          author: '3rd author',
+          url: 'http://someurl.com'
+        })
+      })
+
+      it('make different numbers of likes for the blogs', function () {
+        for (let i = 0; i < 3; i ++) {
+          cy.contains('view').click()
+        }
+        // like 2 times for 'The title with the least likes'
+        for (let i = 0; i < 2; i ++) {
+          cy.get('.blogItem').contains('The title with the least likes').find('#like').click().parent().contains((i + 1).toString())
+        }
+        // like 5 times for 'The title with the most likes'
+        for (let i = 0; i < 5; i ++) {
+          cy.get('.blogItem').contains('The title with the most likes').find('#like').click().parent().contains((i + 1).toString())
+        }
+        // like 3 times for 'The title with the second most likes'
+        for (let i = 0; i < 3; i ++) {
+          cy.get('.blogItem').contains('The title with the second most likes').find('#like').click().parent().contains((i + 1).toString())
+        }
+        // the order should be '2nd blog title', '3rd blog title' and '1st blog title'
+        cy.get('.blogItem').eq(0).should('contain', 'The title with the most likes')
+        cy.get('.blogItem').eq(1).should('contain', 'The title with the second most likes')
+        cy.get('.blogItem').eq(2).should('contain', 'The title with the least likes')
+      })
     })
   })
 })
